@@ -27,16 +27,4 @@ echo '--netrc-optional' >> "${HOME}/.curlrc"
 mkdir -p "${BUILD_DIR}/.profile.d"
 echo 'unset GITHUB_AUTH_TOKEN' > "${BUILD_DIR}/.profile.d/netrc.sh"
 
-if ! USERNAME="$(curl ${CURL_OPTIONS} https://api.github.com/user | jq --raw-output .login)"; then
-  echo '       !!!! Failed to retrieve user information from GitHub. Is `GITHUB_AUTH_TOKEN` set to a valid token?' >&2
-  echo '       !!!! See https://help.github.com/articles/creating-an-oauth-token-for-command-line-use' >&2
-  exit 1
-fi
-
-if ! ORGS="$({ curl ${CURL_OPTIONS} https://api.github.com/user/orgs | jq --raw-output 'map(.login) | sort | join(", ")'; } 2> /dev/null)"; then
-  ORGS="Unknown (Token needs at least 'read:org' or 'user' scopes to list organizations)"
-fi
-
 echo '       Generated .netrc & .curlrc files (available only at build-time)'
-echo "       GitHub User:   ${USERNAME}"
-echo "       Organizations: ${ORGS}"
